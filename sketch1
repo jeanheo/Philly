@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Jean's first sketch!</title>
+        <script type="text/javascript" src="../js/d3.v3.js"></script>
+        <style type="text/css">
+            /* Any CSS style rules can go here */
+            body {
+                margin: 15px;
+                padding: 25px;
+                background-color: gray;
+                color: black;
+                font-family: Helvetica, sans-serif;
+                font-size: 30px;
+                font-weight: bolder;
+            }
+        </style>
+    </head>
+    <body>
+        <p>This is some text.</p>
+        <div>
+            <p>This is a new line.  How does it look?</p>
+        </div>
+        <svg width="500" height="500">
+            <circle cx="200" cy="250" r="100" fill="orange" stroke="black" stroke-width="7">
+        </svg>
+        <svg width="1000" height="750">
+            <circle cx="500" cy="250" r="200" fill="gray" stroke="orange" stroke-width="10">
+        </svg>
+        <script type="text/javascript">
+            // Your beautiful D3 code will go here
+            var svg = d3.select("body")
+                        .append("svg")
+                        .attr("width", 10)
+                        .attr("height", 10);
+            svg
+                .append("circle")
+                .attr("cx", 500) 
+                .attr("cy", 700)
+                .attr("r", 50)
+                .attr("fill", "pink")
+                .attr("opacity", .7);
+        </script>
+    </body>
+</html>
