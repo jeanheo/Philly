@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Sketch 2</title>
+        <title>Sketch 3: randomizing colors</title>
         <script type="text/javascript" src="js/d3.v3.js"></script>
         <style type="text/css">
         div.bar {
@@ -27,6 +27,8 @@
                 dataset.push(newNumber); //Add new number to array
             }
 
+            // Define color scale
+            var color = d3.scale.category20();
 
             // Drawing divs. Name and embed the shared styles of object into class div.name into <head> <style> section above for CSS. Dataset of 5 becomes divs rather than text
             d3.select("body").selectAll("div")
@@ -38,7 +40,15 @@
                 .style("height", function(d) { 
                     var barHeight = d * 2;
                     return barHeight + "px";
-                }); /* CSS above margin-right changes spaces between each d/bar */
+                }) /* CSS above margin-right changes spaces between each d/bar */
+
+                .attr("fill",function(d,i){return color(i);});
+
+                //OR:
+                //.style("fill",function() {
+                //    return "hsl(" + Math.random() * 360 + ",100%,50%)";
+                //    })
+
                
     
                 
