@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>D3 Page Template</title>
+        <script type="text/javascript" src="js/d3.v3.js"></script>
+        <div style="display: inline-block;  
+                    width: 20px;
+                    height: 75px;
+                    background-color: teal;"></div> 
+        <style type="text/css">
+        div.bar {
+            display: inline-block;
+            width: 20px;
+            height: 75px;   /* We'll override height later */
+            background-color: teal;
+            margin-right: 2px; /* Add spaces between bars. See below */
+        }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            // Your beautiful D3 code will go here
+            var text = d3.select("body")
+                        .append("p")
+                        .text("another New paragraph!");
+
+            // This creates the dataset of 5 objects. Bind data using next set of var.
+            var dataset = [25, 7, 5, 26, 11, 8, 25, 14, 23, 19,
+                14, 11, 22, 29, 11, 13, 12, 17, 18, 10,
+                24, 18, 25, 9, 3 ];
+
+            // Giving character (binding the data) to the dataset above. This will create new paragraphs for each datum, with d referring to data(), referring to var dataset above
+            // .text can be string ("something") or result of a function (function(something)); d is just a placeholder
+            // .data can loop through as many data points as it's given through ()
+            var paragraphs = d3.select("body").selectAll("p")
+                                .data(dataset)
+                                .enter()
+                                .append("p")
+                                .text(function(d) { return "I can count up to " + d; 
+                                })
+                                .style("color", function(d) { if (d > 15) {return "blue";}
+                                    else {return "pink";}
+                                });
+
+            // Drawing divs. Name and embed the shared styles of object into class div.name into <head> <style> section above for CSS. Dataset of 5 becomes divs rather than text
+            d3.select("body").selectAll("div")
+                .data(dataset)
+                .enter()
+                .append("div")
+                .attr("class", "bar")
+                // Making bar chart. Value of each d translated as pixels, translated as heights. Create var barHeight and use operators to play with sizes
+                .style("height", function(d) { 
+                    var barHeight = d * 5;
+                    return barHeight + "px";
+                }); /* CSS above margin-right changes spaces between each d/bar */
+
+        
+
+        </script>
+    </body>
+</html>

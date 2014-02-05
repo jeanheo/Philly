@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>D3 Page Template</title>
+        <script type="text/javascript" src="js/d3.v3.js"></script>
+        <style type="text/css">
+        div.bar {
+            display: inline-block;
+            width: 20px;
+            height: 75px;   /* We'll override height later */
+            background-color: teal;
+            margin-right: 2px; /* Add spaces between bars. See below */
+        }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            // Your beautiful D3 code will go here
+
+            // Best to put width and height at top, easier reference for later
+            var w = 500;
+            var h = 100;
+            var barPadding = 1; // To set proportional spacing between items. Reference this in .attr(width) below
+
+            // Add a dataset
+            var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13, 11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+
+            // Create empty svg element to add to DOM
+            var svg = d3.select("body")
+                        .append("svg")
+                        .attr("width", w)
+                        .attr("height", h);
+
+            // Instead of using divs, generate rects to add to svg. 
+            svg.selectAll("rect")
+                .data(dataset)
+                .enter()
+                .append("rect")
+                // Use dynamic values for .attri so that data don't overlap
+                .attr("x", function(d, i) { return i * (w / dataset.length); // Flexible and even spacing of bar throughout entire 500px of svg width
+                })
+                .attr("y", function(d) { return h - (d * 4);
+                }) // Height minus data value, so bars go upwards, rather than growing down if y set to 0. Multiply dx4 to increase height
+                .attr("width", w / dataset.length - barPadding) // Fraction of svg width divided by number of data points, minus padding value set above)
+                .attr("height", function(d) { return d * 4;
+                }) // Must respecify any operators used to change bar positioning in y above
+                .attr("fill", function(d) { 
+                    return "rgb(0, 0, " + (d * 10) + ")";
+                }); // Blue of RGB is set as dx10 so that greater values of d (taller) will bluer, and smaller values will be closer to black. Red and Green of RGB are set to 0. 
+
+            // Add labels/text
+
+            svg.selectAll("text")
+                .data(dataset)
+                .enter()
+                .append("text")
+                .text(function(d) { return d;
+                }) // Use the dataset/d as text
+                // Position text using x and y values
+                .attr("x", function(d, i) {
+                    return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
+                }) // Recalculate x position to left edge of each bar plus half bar width = middle width of the bar
+                .attr("y", function(d) {
+                    return h - (d * 4) + 14;
+                }) // Add 14 so spacing is even on both sides and top
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "11px")
+                .attr("fill", "orange")
+                // Position text 
+                .attr("text-anchor", "middle");
+
+
+            
+
+        </script>
+    </body>
+</html>

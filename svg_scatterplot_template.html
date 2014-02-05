@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>D3 Page Template</title>
+        <script type="text/javascript" src="js/d3.v3.js"></script>
+        <style type="text/css">
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            // Your beautiful D3 code will go here
+
+            // Best to put width and height at top, easier reference for later
+            var w = 500;
+            var h = 100;
+            var barPadding = 1; // To set proportional spacing between items. Reference this in .attr(width) below
+
+            // Add a dataset using an array of arrays, so that for each point (primary array) will have another point (second xy array). Nestle [[]] to signify array within array. Can be written as single line also
+            var dataset = [
+                            [ 5, 20 ],
+                            [ 480, 90 ],
+                            [ 250, 50 ],
+                            [ 100, 33 ],
+                            [ 330, 95 ],
+                            [ 410, 12 ],
+                            [ 475, 44 ],
+                            [ 25, 67 ],
+                            [ 85, 21 ],
+                            [ 220, 88 ]
+                            ];
+
+            // Create empty svg element to add to DOM
+            var svg = d3.select("body")
+                        .append("svg")
+                        .attr("width", w)
+                        .attr("height", h);
+
+            // Instead of rects, use circle for each datapoint
+            svg.selectAll("circle")
+                .data(dataset)
+                .enter()
+                .append("circle")
+                // Use dynamic values for .attri so that data don't overlap
+                .attr("cx", function(d, i) { return d[0];
+                }) // d[0] to return the first value in array; first point [5, 20] 0 returns 5
+                .attr("cy", function(d) { return d[1];
+                }) // d[1] to return second value in array
+                .attr("r", function(d) { 
+                    return Math.sqrt(h - d[1]);
+                }); // Make each circle correspond to its y and encode as area (encoding as radius distorts). Subtract from h so that circles at top are larger; circles with greater y (lower positions) have smaller areas/shorter radii
+
+            // Add labels/text
+            svg.selectAll("text")
+                .data(dataset)
+                .enter()
+                .append("text")
+                .text(function(d) { return d[0] + "," + d[1];
+                }) // Bring d[0] and d[1] values together separated by comma
+                .attr("x", function(d) { return d[0];
+                })
+                .attr("y", function(d) {
+                    return d[1];
+                })
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "11px")
+                .attr("fill", "orange")
+                // Position text 
+
+
+            
+
+        </script>
+    </body>
+</html>
