@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Camden</title>
+        <script type="text/javascript" src="js/d3.v3.js"></script>
+        <style type="text/css">
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            // Your beautiful D3 code will go
+
+        var h, mapXY, path, states, w;
+
+        
+        w = 1000;
+        h = 1000; 
+
+        
+        mapXY = d3.geo.albersUsa().scale(900).translate([h / 2, w / 2]);
+
+        path = d3.geo.path().projection(mapXY);
+
+        states = d3.select("#geo-map").append("svg").append("g")
+
+        states.selectAll("#states path").data(geoMapData.features)
+            .enter()
+            .insert("path")
+            .attr("d", path)
+            .attr('stroke', 'white')
+            .attr('fill', '#ccc')
+
+        
+
+        </script>
+    </body>
+</html>

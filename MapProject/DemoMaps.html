@@ -3,22 +3,39 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Philadelphia and Camden demolitions 2008-2012</title>
+
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://d3js.org/topojson.v0.min.js"></script>
  		
  <style type="text/css">
 
+ 	body {
+ 		background-color: black;
+ 	}
+
 	#cities {
-  		stroke: white;
-		stroke-width: 4px;
+  		stroke: black ;
+		stroke-width: 1px;
 		fill: #D0D0D0;
+		stroke-opacity: .5;
 		}
 
 	/*#censustracts {
-		stroke: white;
+		fill: none;
+		stroke-width: 4px;
+		opacity: 0.4;
+		}
+
+	#censustracts-border {
+		fill: none;
+		stroke: black;
 		stroke-width: 4px;
 		opacity: 0.4;
 		}*/
+
+	path:hover, path.highlighted {
+  fill: tomato;
+}
 
 	</style>
 	</head>
@@ -40,13 +57,15 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-var titlePhil = "Philadelphia"
-	svg.selectAll("titlePhil").append("text")
-        .attr("x", "100px")
-        .attr("y", "100px")
+var Philadelphia = "Philadelphia"
+
+		svg.selectAll("text")
+		.append("text")
+        .attr("x", "50px")
+        .attr("y", "50px")
         .text("Philadelphia")
         .attr("font-family", "sans-serif")
-        .attr("font-size", "100px")
+        .attr("font-size", "50px")
         .attr("fill", "red");
 
 
@@ -67,12 +86,22 @@ d3.json("CamdenAndPhila.json", function(error, shapefiles) {
 		.attr("class", function(d){ return d.properties.name; })
 		.attr("d", path);
 
-});
-/////////////////////////////
+// 	var zoom = d3.behavior.zoom()
+// 			.on("zoom", function() {
+// 				g.attr("transform", "translate(" + 
+// 					d3.event.translate.join(",") + ") scale(" + d3.event.scale+")");
+// 				g.selectAll("path")
+// 					.attr("d", path.projection(projection));
+// 			});
+
+// 	svg.call(zoom);
+
+}); //Extend later to include data points within this datset. Loads better/in order?
+///////////////////////////// 
 
 
 d3.csv("Philly.csv", function(error,data){
-	console.log(data)
+	// console.log(data)
 
 	svg.selectAll(".phil.dot") // Give specific name rather than generic "circle", otherwise camden "circle" will reference this one instead (no dots).
 		.data(data)
@@ -84,9 +113,9 @@ d3.csv("Philly.csv", function(error,data){
 		.attr("cy", function(d) {
 			return projection([d.lon, d.lat])[1];
 		})
-		.attr("r", 3)
+		.attr("r", 2)
 		.style("fill", "black")
-		.style("opacity", 0.15)
+		.style("opacity", 0.2)
 		.on("mouseover", function(d){
 			//Get this bar's x/y values, then augment for the tooltip
 			var xPosition = parseFloat(d3.select(this).attr("cx")) + 40;
@@ -105,7 +134,17 @@ d3.csv("Philly.csv", function(error,data){
 		.on("mouseout", function() {
 					//Remove the tooltip
 			d3.select("#tooltip").remove();	
-})
+
+	// 	var zoom = d3.behavior.zoom()
+	// 		.on("zoom", function() {
+	// 			xxx.attr("transform", "translate(" + 
+	// 				d3.event.translate.join(",") + ") scale(" + d3.event.scale+")");
+	// 			xxx.selectAll("path")
+	// 				.attr("d", path.projection(projection));
+	// 		});
+
+	// svg.call(zoom);
+});
 
 
 // d3.csv("PhilPub.csv", function(error,data){
@@ -145,7 +184,7 @@ d3.csv("Philly.csv", function(error,data){
 // })
 
 d3.csv("CamPub.csv", function(error,data){
-	console.log(data)
+	// console.log(data)
 
 	svg.selectAll("cam.dot") // unique name. see note above. 
 		.data(data)
@@ -157,9 +196,9 @@ d3.csv("CamPub.csv", function(error,data){
 		.attr("cy", function(d) {
 			return projection([d.lon, d.lat])[1];
 		})
-		.attr("r", 3)
+		.attr("r", 2)
 		.style("fill", "black")
-		.style("opacity", 0.15)	
+		.style("opacity", 0.2)	
 
 		.on("mouseover", function(d){
 			//Get this bar's x/y values, then augment for the tooltip
@@ -186,9 +225,14 @@ d3.csv("CamPub.csv", function(error,data){
 });
 
 
-// Census tracts
+// Census tracts attempt 1
 // d3.json("PhilCamCT.json", function(error, shapefiles) {
 // 	console.log(shapefiles)
+
+// 	var projection = d3.geo.mercator()
+//   					.center([-75.1066, 39.9368])
+//   					.scale(100000)
+//   					.translate([(width) / 2, (height)/2]);
 
 // 	var path = d3.geo.path()
 // 					.projection(projection);
@@ -196,15 +240,177 @@ d3.csv("CamPub.csv", function(error,data){
 // 	var g = svg.append("g");
 
 // 			g.append("g")
-// 				.attr("id", "censustracts")
+// 				.attr("class", "censustracts")
 // 				.selectAll("path")
-// 				.data(shapefiles.features)
+// 				.data(shapefiles.featurecollection)
 // 				.enter().append("path")
 // 				.attr("class", function(d){ return d.id; })
 // 				.attr("d", path);
 
 // });
 
+// attempt 2
+// d3.json("PhilCamCT.json", function(error, topology) {
+
+// 	var path = d3.geo.path()
+// 					.projection(projection);
+
+// 	var g = svg.append("g");
+
+// 		g.selectAll("path")
+// 			.data(topojson.object(topology, topology.objects.countries).geometries)
+// 			.enter()
+// 			.append("path")
+// 			.attr("d", path);
+
+// });
+
+//attempt 3
+
+// d3.json("PhilCamCT_topo.json", function(error, ct) 
+// 	{
+// 		var tract = topojson
+// 			.feature(ct, ct.objects.tract);
+
+// 		projection.scale(1).translate([0, 0]);
+
+// 		var b = path.bounds(tract), s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height), t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+
+// 		projection.scale(s).translate(t);
+
+// 		svg.selectAll("path")
+// 		.data(tract.features.filter(
+// 			function(d) 
+// 				{
+// 					return d.type;
+// 				}))
+// 				.enter()
+// 				.append("path")
+// 				.attr("class", "censustracts")
+// 				.attr("d", path)
+// 				.append("title")
+// 				.text(function(d) 
+// 				{
+// 					return d.type;
+// 				});
+
+// 		svg.append("path")
+// 			.datum(topojson.mesh(ct, ct.objects.tract, function(a, b) 
+// 			{
+// 				return a !== b;
+// 			}))
+// 			.attr("class", "censustracts-border-border")
+// 			.attr("d", path);
+// 	});
+
+// 	d3.select(self.frameElement).style("height", height + "px");
+
+//////
+
+// d3.json("PhilCamCT_topo.json", function(error, ct) {
+//   var tracts = ct.objects.layer1;
+ 
+//   // strip water counties
+//   // tracts.geometries = tracts.geometries
+//   //   .filter(function(d) { return (d.id / 10000 | 0) !== 99; });
+ 
+//   svg.append("g")
+//     .selectAll("path")
+//       .data(topojson.feature(ct, layer1.arcs).features)
+//     .enter().append("path")
+//       // .attr("class", "censustracts")
+//       .attr("d", path)
+//     .append("title")
+//       .text(function(d, i) { return d.id; });
+ 
+//   svg.append("path")
+//       .attr("class", "censustracts-border")
+//       .datum(topojson.mesh(ct, layer1, function(a, b) { return a !== b; }))
+//       .attr("d", path);
+// });
+ 
+// d3.select(self.frameElement).style("height", height + "px");
+
+
+
+// var zoom = d3.behavior.zoom()
+// 			.on("zoom", function() {
+// 				g.attr("transform", "translate(" + 
+// 					d3.event.translate.join(",") + ") scale(" + d3.event.scale+")");
+// 				g.selectAll("path")
+// 					.attr("d", path.projection(projection));
+// 			});
+
+// svg.call(zoom)
+
+//Philly Census Tracts
+var path = d3.geo.path()
+    .projection(projection);
+ 
+// var text = svg.append("text")
+//     .attr("y", height/8)
+//     .attr("text-anchor", "left");
+ 
+// d3.json("PhilCT1_topo.json", function(error, topology) {
+//     svg.selectAll("path")
+//         .data(topojson.object(topology, topology.objects.layer1).geometries)
+//       .enter().append("path")
+//         .attr("class", "tracts")
+// 	.attr("id", function(d,i){
+// 		// console.log(d.properties.TRACTCE10);
+// 		return d.properties.TRACTCE10;
+// 	})
+// 	.attr("d", path)
+// 	.attr("opacity", "1")
+	
+// });
+
+d3.json("tracts.json", function(error, topology) {
+    svg.selectAll("path")
+        .data(topojson.object(topology, topology.objects.tracts).geometries)
+      .enter().append("path")
+        .attr("class", "tracts")
+	.attr("id", function(d){return d.id;})
+	.attr("d", path)
+	.attr("stroke", "gray")
+	.attr("stroke-width", ".2")
+	.attr("fill", "none")
+	// .on("mouseover", function(){d3.select(this).style("fill", "#ff0");
+	// 	text.text("tract: " + this.id);})
+	// .on("mouseout", function(){d3.select(this).style("fill", "none");
+	// 	text.text("");});
+});
+
+var path = d3.geo.path()
+    .projection(projection);
+d3.json("pLowInc.json", function(error, topology) {
+    svg.selectAll("path")
+        .data(topojson.object(topology, topology.objects.layer1).geometries)
+      .enter().append("path")
+        .attr("class", "tracts")
+	.attr("id", function(d){return d.id;})
+	.attr("d", path)
+	.attr("stroke", "gray")
+	.attr("stroke-width", ".2")
+	.attr("fill", "none")
+});
+
+//Camden Census Tracts 
+
+// var path = d3.geo.path()
+//     .projection(projection);
+
+// d3.json("CamdenCT.json", function(error, topology) {
+//     svg.selectAll("path")
+//         .data(topojson.object(topology, topology.objects.tracts).geometries)
+//       .enter().append("path")
+//         .attr("class", "tracts")
+// 	.attr("id", function(d){return d.TRACTCE;})
+// 	.attr("d", path)
+// 	.attr("stroke", "gray")
+// 	.attr("stroke-width", ".2")
+// 	.attr("fill", "none")
+// });
 			
 		</script>
 	</body>

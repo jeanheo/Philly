@@ -1,23 +1,379 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Philly and Camden</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="generator" content="Google Web Designer 1.0.3.0115">
-    <style type="text/css">
-      html, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-      }
+<meta charset="utf-8">
+<title>Philadelphia and Camden demolitions 2008-2012</title>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
 
-      body {
-        background-color: transparent;
-        -webkit-transform: perspective(1400px) matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-        -webkit-transform-style: preserve-3d;
-      }
-    </style>
-  </head>
-  <body>
-  </body>
+<style>
+
+body {
+  font-family: 12px monospace;
+  background-color: black;
+}
+
+path {
+  stroke-width: .8px;
+  stroke: white;
+  fill: white;
+  opacity: .4;
+  cursor: pointer;
+}
+
+path:hover, path.highlighted {
+  fill: #cccccc;
+  opacity: .5;
+}
+
+hot {
+  fill: red;
+  opacity: .7;
+}
+
+cold {
+  stroke: none;
+  fill: blue;
+  opacity: .7;
+}
+
+/*.tract {
+  fill: white;
+  opacity: .6;
+}*/
+
+/*.tract-border {
+  fill: none;
+  stroke: #333;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}*/
+
+</style>
+</head>
+<body>
+
+  <div id="high income">
+    <input name ="highincButton"
+            type="button"
+            value="High Income"
+            onclick="updateData()"
+    />
+  </div>
+
+
+   <div id="low income">
+    <input name ="lowincButton"
+            type="button"
+            value="Low Income"
+            onclick="updateData1()"
+    />
+  </div>
+
+<script>
+
+//Map dimensions (in pixels)
+
+var width = 800,
+    height = 800;
+
+
+//Map projection
+var projection = d3.geo.mercator()
+    .scale(100000)
+    .center([-75.118026,40.0028294243539]) //projection center
+    .translate([width/2,height/2]) //translate to center the map in view
+
+//Generate paths based on projection
+var path = d3.geo.path()
+    .projection(projection);
+
+//Create an SVG
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+//Title
+svg.append("text")
+  .style("fill", "white")
+  .attr("x",75)
+  .attr("y", 90)
+  .attr("font-family", "courier new")
+  .attr("font-size", 45)
+  .text("i live here.");
+
+//Subtitle
+svg.append("text")
+  .style("fill", "white")
+  .attr("x",500)
+  .attr("y", 800)
+  .attr("font-family", "courier new")
+  .attr("font-size", 12)
+  .text("demolitions from 2008-2012");
+
+
+//Label Philly
+svg.append("text")
+  .style("fill", "white")
+  .attr("x",45)
+  .attr("y", 385)
+  .attr("font-family", "courier new")
+  .attr("font-size", 18)
+  .text("Philadelphia");
+
+//Label Camden
+svg.append("text")
+  .style("fill", "white")
+  .attr("x",490)
+  .attr("y", 590)
+  .attr("font-family", "courier new")
+  .attr("font-size", 18)
+  .text("Camden");
+
+//Group for the map features
+var features = svg.append("g")
+    .attr("class","features");
+
+//Create zoom/pan listener
+//Change [1,Infinity] to adjust the min/max zoom scale
+// var zoom = d3.behavior.zoom()
+//     .scaleExtent([1, Infinity])
+//     .on("zoom",zoomed);
+
+// svg.call(zoom);
+
+/////////////////CENSUSTRACTS//////////////////////////
+
+d3.json("pctracts.geojson",function(error,geodata) {
+  if (error) return console.log(error); //unknown error, check the console
+
+
+  //Create a path for each map feature in the data
+  features.selectAll("path")
+    .data(geodata.features)
+    .enter().append("path")
+    .attr("class", "tract")
+    .attr("d",path)
+    .style("stroke-dasharray", ("3,3"))
+    .on("click",clicked); // don't close this yet
+
+
+// d3.json("highincP.geojson",function(error,geodata) {
+//   if (error) return console.log(error); //unknown error, check the console
+
+//   //Create a path for each map feature in the data
+//   var g = svg.append("g");
+  
+//     g.append("g")
+//     .attr("id", "hot")
+//     .selectAll("path")
+//     .data(geodata.features)
+//     .enter().append("path")
+//     .attr("d",path)
+//     // .attr("stroke", "green")
+//     // .attr("stroke-width", "3")
+//     .on("click",clicked);
+//     // .transition()
+//     //     .style("fill", "green");
+//     //     button.on("click", function() {features})
+    
+//     ///// d3.select('.container')
+//     // .node()
+//     // .appendChild(data.documentElement);
+
+//     // var svg = d3.select('.container svg');
+//     // var Button = svg.select('#HighIncButton')
+//     // .on('mouseenter', function () {
+//     //     // put on some flashy color!
+//     //     Button.style('fill', '#AB69C6');
+//     // });
+//     // .on("mouseleave", function() { 
+//     //     Button.style("fill", "#9B59B6")
+//     //   })
+
+
+
+// });
+
+d3.json("lowincP.geojson",function(error,geodata) {
+  if (error) return console.log(error); //unknown error, check the console
+
+    var g = svg.append("g");
+  
+    g.append("g")
+    .attr("id", "cold")
+  //Create a path for each map feature in the data
+  .selectAll("path")
+    .data(geodata.features)
+    .enter().append("path")
+    .attr("d",path)
+    .attr("fill", "brown")
+    .on("click",clicked);
+
+});
+
+//////////PHILLY DEMOLITIONS/////////////////////
+
+d3.csv("Philly.csv", function(error,data){
+  // console.log(data)
+
+  svg.selectAll(".phil.dot") // Give specific name rather than generic "circle", otherwise camden "circle" will reference this one instead (no dots).
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("cx", function(d) {
+      return projection([d.lon, d.lat])[0];
+    })
+    .attr("cy", function(d) {
+      return projection([d.lon, d.lat])[1];
+    })
+    .attr("r", 2.5)
+    .style("fill", "black")
+    .style("opacity", 0.2)
+    .on("mouseover", function(d){
+      //Get this bar's x/y values, then augment for the tooltip
+      var xPosition = parseFloat(d3.select(this).attr("cx")) + 40;
+      var yPosition = parseFloat(d3.select(this).attr("cy")) + 30;
+      //Create the tooltip label
+      svg.append("text")
+        .attr("id", "tooltip")
+        .attr("x", xPosition)
+        .attr("y", yPosition)
+        .attr("text-anchor", "middle")
+        .attr("font-family", "monospace")
+        .attr("font-size", "17px")
+        .style("fill", "#CEECF5")
+        .text(d.Date)
+        .text(d.STREET);
+    })
+    .on("mouseout", function() {
+          //Remove the tooltip
+      d3.select("#tooltip").remove()
+    });
+});
+
+
+
+//////////////CAMDEN DEMOLITIONS///////////////////////////
+d3.csv("CamPub.csv", function(error,data){
+  // console.log(data)
+
+  svg.selectAll("cam.dot") // unique name. see note above. 
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("cx", function(d) {
+      return projection([d.lon, d.lat])[0];
+    })
+    .attr("cy", function(d) {
+      return projection([d.lon, d.lat])[1];
+    })
+    .attr("r", 2.5)
+    .style("fill", "black")
+    .style("opacity", 0.2)  
+
+    .on("mouseover", function(d){
+      //Get this bar's x/y values, then augment for the tooltip
+      var xPosition = parseFloat(d3.select(this).attr("cx")) + 40;
+      var yPosition = parseFloat(d3.select(this).attr("cy")) + 30;
+      //Create the tooltip label
+      svg.append("text")
+        .attr("id", "tooltip")
+        .attr("x", xPosition)
+        .attr("y", yPosition)
+        .attr("text-anchor", "middle")
+        .attr("font-family", "monospace")
+        .attr("font-size", "17px")
+        .style("fill", "#CEECF5")
+        .text(d.Date_)
+        .text(d.Address); 
+     })
+         
+    .on("mouseout", function() {
+          //Remove the tooltip
+      d3.select("#tooltip").remove();
+    })
+});
+
+}); //<---this close the .json census tracts file above
+
+// Add optional onClick events for features here
+// d.properties contains the attributes (e.g. d.properties.name, d.properties.population)
+function clicked(d,i) {
+
+}
+
+
+//Update map on zoom/pan
+function zoomed() {
+  features.attr("transform", "translate(" + zoom.translate() + ")scale(" + zoom.scale() + ")")
+      .selectAll("path").style("stroke-width", 1 / zoom.scale() + "px" );
+}
+
+///Buttons
+
+function updateData() {
+
+  d3.json("highincP.geojson",function(error,geodata) {
+  if (error) return console.log(error); 
+  });
+
+  //select section to apply changes
+  var g = d3.select("body").transition();
+
+  //make changes
+  svg.select("path")
+    // .attr("d", path)
+    .data("MultiPolygon")
+    // .enter().append("path")
+      .style("fill", "#006600")
+    
+    // var g = svg.append("g");
+  
+    // g.append("g")
+    // .attr("id", "hot")
+    // .selectAll("path")
+    // .data(geodata.features)
+    // .enter().append("path")
+    // .attr("d",path)
+    // .attr("stroke", "green")
+    // .attr("stroke-width", "3")
+}
+
+function updateData1() {
+
+  d3.json("lowincP.geojson",function(error,geodata) {
+  if (error) return console.log(error);
+});
+
+  //select section to apply changes
+  var svg = d3.select("body").transition()
+
+  //make changes
+  features.selectAll("path")
+    // .data(features)
+    // .enter().append("path")
+      .style("fill", "#99ff66")
+    // .attr("d",path)
+
+//   //   var g = svg.append("g");
+  
+//   //   g.append("g")
+//   //   .attr("id", "cold")
+//   // //Create a path for each map feature in the data
+//   // .selectAll("path")
+//   //   .data(geodata.features)
+//   //   .enter().append("path")
+//   //   .attr("d",path)
+//   //   .attr("fill", "brown")
+//   //   .on("click",clicked);
+
+}
+
+
+
+</script>
+
+</body>
+
 </html>
